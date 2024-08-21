@@ -27,7 +27,7 @@ let
       ${toString config.extraOpenArgs} \
       ${keyFileArgs} \
   '';
-  crpytsetupExtraFormatOptions = "${toString config.extraFormatOptions}"
+  crpytsetupExtraFormatOptions = "${toString config.extraFormatOptions}";
 in
 {
   options = {
