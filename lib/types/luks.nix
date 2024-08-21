@@ -27,6 +27,7 @@ let
       ${toString config.extraOpenArgs} \
       ${keyFileArgs} \
   '';
+  crpytsetupExtraFormatOptions = "${toString config.extraFormatOptions}"
 in
 {
   options = {
@@ -90,6 +91,12 @@ in
       description = "Extra arguments to pass to `cryptsetup luksFormat` when formatting";
       example = [ "--pbkdf argon2id" ];
     };
+    extraFormatOptions = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "Extra options to pass to `cryptsetup <OPTIONS> luksFormat` when formating";
+      example = [ "--label=NIXOS_LUKS" ];
+    };
     extraOpenArgs = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
@@ -132,7 +139,7 @@ in
               echo "Passwords did not match, please try again."
             done
           ''}
-          cryptsetup -q luksFormat ${config.device} ${toString config.extraFormatArgs} ${keyFileArgs}
+          cryptsetup -q ${lib.optionalString (config.extraFormatOptions != []) toString config.extraFormatOptions} luksFormat ${config.device} ${toString config.extraFormatArgs} ${keyFileArgs}
           ${cryptsetupOpen} --persistent
           ${toString (lib.forEach config.additionalKeyFiles (keyFile: ''
             cryptsetup luksAddKey ${config.device} ${keyFile} ${keyFileArgs}
